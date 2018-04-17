@@ -26,7 +26,9 @@ showEntry entry = entry.firstName
     <> " " <> showAddress entry.address
 
 showAddress :: Address -> String
-showAddress address = address.street <> ", " <> address.city <> ", " <> address.state
+showAddress address = address.street
+    <> ", " <> address.city
+    <> ", " <> address.state
 
 emptyBook :: AddressBook
 emptyBook = empty
