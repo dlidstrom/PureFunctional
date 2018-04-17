@@ -1,5 +1,4 @@
-﻿open System
-open Library
+﻿open Library
 
 [<EntryPoint>]
 let main argv =
