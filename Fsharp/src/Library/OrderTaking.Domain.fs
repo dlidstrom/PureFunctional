@@ -1,4 +1,4 @@
-module Domain =
+namespace OrderTaking.Domain
     type Undefined = exn
 
     type WidgetCode = WidgetCode of string
@@ -13,21 +13,39 @@ module Domain =
         | Unit of UnitQuantity
         | Kilogram of KilogramQuantity
 
+    type OrderId = Undefined
+    type OrderLineId = Undefined
+    type CustomerId = Undefined
+
     type CustomerInfo = Undefined
     type ShippingAddress = Undefined
     type BillingAddress = Undefined
-    type OrderLine = Undefined
+    type Price = Undefined
     type BillingAmount = Undefined
 
+    type OrderLine = {
+        Id: OrderLineId
+        OrderId: OrderId
+        ProductCode: ProductCode
+        OrderQuantity: OrderQuantity
+        Price: Price
+    }
+
     type Order = {
-        CustomerInfo: CustomerInfo
+        Id: OrderId
+        CustomerId: CustomerId
         ShippingAddress: ShippingAddress
         BillingAddress: BillingAddress
         OrderLines: OrderLine list
         AmountToBill: BillingAmount
     }
 
-    type UnvalidatedOrder = Unknown
+    type UnvalidatedOrder = {
+        OrderId: string
+        CustomerInfo: Undefined
+        ShippingAddress: Undefined
+    }
+
     type ValidatedOrder = Unknown
     type ValidationError = {
         FieldName: string
@@ -44,8 +62,10 @@ module Domain =
         OrderPlaced: OrderPlaced
         BillableOrderPlaced: BillableOrderPlaced
     }
+    type PlaceOrderError =
+        | ValidationError of ValidationError list
 
-    type PlaceOrder = UnvalidatedOrder -> PlaceOrderEvents
+    type PlaceOrder = UnvalidatedOrder -> Result<PlaceOrderEvents, PlaceOrderError>
 
     type EnvelopeContents = EnvelopeContents of string
 
