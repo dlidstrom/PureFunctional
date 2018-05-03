@@ -1,5 +1,6 @@
 namespace OrderTaking.Domain
-    type Undefined = exn
+    open System
+    type Undefined = exn // built-in abbreviation for Exception type
 
     type WidgetCode = WidgetCode of string
     type GizmoCode = GizmoCode of string
@@ -7,7 +8,18 @@ namespace OrderTaking.Domain
         | Widget of WidgetCode
         | Gizmo of GizmoCode
 
-    type UnitQuantity = UnitQuantity of int
+    type UnitQuantity = private UnitQuantity of int
+    module UnitQuantity =
+        let create qty =
+            if qty < 1 then
+                Error "UnitQuantity can not be negative"
+            else if qty > 1000 then
+                Error "UnitQuantity can not be more than 1000"
+            else
+                Ok (UnitQuantity qty)
+
+        let value (UnitQuantity qty) = qty
+
     type KilogramQuantity = KilogramQuantity of decimal
     type OrderQuantity =
         | Unit of UnitQuantity
@@ -16,6 +28,16 @@ namespace OrderTaking.Domain
     type OrderId = Undefined
     type OrderLineId = Undefined
     type CustomerId = Undefined
+
+    type EmailAddress = EmailAddress of string
+    type VerifiedEmailAddress = EmailAddress of string
+    type CustomerEmail =
+        | Unverified of EmailAddress
+        | Verified of VerifiedEmailAddress
+    // type CustomerEmail = {
+    //     EmailAddress: EmailAddress
+    //     IsVerified: bool
+    // }
 
     type CustomerInfo = Undefined
     type ShippingAddress = Undefined
@@ -31,19 +53,32 @@ namespace OrderTaking.Domain
         Price: Price
     }
 
+    type NonEmptyList<'a> = {
+        First: 'a
+        Rest: 'a list
+    }
+
     type Order = {
         Id: OrderId
         CustomerId: CustomerId
         ShippingAddress: ShippingAddress
         BillingAddress: BillingAddress
-        OrderLines: OrderLine list
+        OrderLines: NonEmptyList<OrderLine>
         AmountToBill: BillingAmount
+    }
+
+    type UnvalidatedCustomerInfo = {
+        Info: Undefined
+    }
+
+    type UnvalidatedShippingAddress = {
+        Info: Undefined
     }
 
     type UnvalidatedOrder = {
         OrderId: string
-        CustomerInfo: Undefined
-        ShippingAddress: Undefined
+        CustomerInfo: UnvalidatedCustomerInfo
+        ShippingAddress: UnvalidatedShippingAddress
     }
 
     type ValidatedOrder = Unknown
@@ -65,7 +100,22 @@ namespace OrderTaking.Domain
     type PlaceOrderError =
         | ValidationError of ValidationError list
 
-    type PlaceOrder = UnvalidatedOrder -> Result<PlaceOrderEvents, PlaceOrderError>
+    type Command<'data> = {
+        Data: 'data
+        Timestamp: DateTime
+        UserId: string
+    }
+
+    type PlaceOrder = Command<UnvalidatedOrder>
+    type ChangeOrder = Command<UnvalidatedOrder>
+    type CancelOrder = Command<UnvalidatedOrder>
+
+    type OrderTakingCommand =
+        | Place of PlaceOrder
+        | Change of ChangeOrder
+        | Cancel of CancelOrder
+
+    //type PlaceOrder = UnvalidatedOrder -> Result<PlaceOrderEvents, PlaceOrderError>
 
     type EnvelopeContents = EnvelopeContents of string
 
