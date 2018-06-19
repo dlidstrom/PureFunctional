@@ -16,11 +16,21 @@ type Response = {
     Headers: Dictionary<string, string>
 }
 
+type ResponseBody = {
+    Message: string
+    Request: Request
+}
+
 module Handler =
 
     let hello(request:Request) =
+        let responseBody = {
+            Message = "Go Serverless! Hello from HTTP!"
+            Request = request
+        }
+
         {
-            Body = "Go Serverless v1.0! Your function executed successfully!"
             StatusCode = 200
             Headers = new Dictionary<string, string>()
+            Body = JsonConvert.SerializeObject(responseBody)
         }
