@@ -2,3 +2,9 @@ Fsharp/src/App/bin
 Fsharp/src/App/obj
 Fsharp/src/Library/bin
 Fsharp/src/Library/obj
+NativeLambda/HelloCsharp/.serverless/
+NativeLambda/HelloCsharp/bin/
+NativeLambda/HelloCsharp/obj/
+NativeLambda/HelloFsharp/.serverless/
+NativeLambda/HelloFsharp/bin/
+NativeLambda/HelloFsharp/obj/
