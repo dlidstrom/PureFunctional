@@ -1,3 +1,6 @@
+import Data.Char
+import Data.List
+
 doubleMe x = x + x
 doubleUs x y = x * 2 + y * 2
 doubleSmallNumber x = if x > 100
@@ -105,3 +108,19 @@ zipWith' f (x:xs) (y:ys) = f x y : zipWith' f xs ys
 
 flip' :: (a -> b -> c) -> (b -> a -> c)
 flip' f y x = f x y
+
+chain :: Integer -> [Integer]
+chain 1 = [1]
+chain n
+    | even n = n:chain (n `div` 2)
+    | otherwise = n:chain (3 * n + 1)
+
+numLongChains :: Int
+numLongChains = length (filter isLong (map chain [1..100]))
+    where isLong xs = length xs > 15
+
+digitSum :: Int -> Int
+digitSum = sum . map digitToInt . show
+
+firstTo :: Int -> Maybe Int
+firstTo n = find (\x -> digitSum x == n) [1..]
