@@ -1,4 +1,4 @@
-dotnet restore src
+dotnet restore
 dotnet lambda package \
     --configuration release \
     --framework netcoreapp2.1 \
