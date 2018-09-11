@@ -57,12 +57,8 @@ let indexHandler (name : string) =
 
 let webApp =
     choose [
-        GET >=>
-            choose [
-                route "/" >=> indexHandler "world"
-                routef "/hello/%s" indexHandler
-            ]
-        setStatusCode 404 >=> text "Not Found" ]
+        GET >=> indexHandler "Daniel"
+    ]
 
 // ---------------------------------
 // Error handler
@@ -100,7 +96,6 @@ let configureLogging (builder : ILoggingBuilder) =
     let filter (l : LogLevel) = l.Equals LogLevel.Error
     builder.AddFilter(filter).AddConsole().AddDebug() |> ignore
 
-// https://www.jerriepelser.com/blog/aspnet-core-aws-lambda-serverless-application/
 type LambdaEntryPoint() =
     inherit Amazon.Lambda.AspNetCoreServer.APIGatewayProxyFunction()
 
