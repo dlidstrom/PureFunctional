@@ -57,8 +57,8 @@ let indexHandler (name : string) =
 
 let webApp =
     choose [
-        GET >=> indexHandler "Daniel"
-    ]
+        route "/ping"   >=> text "pong"
+        route "/"       >=> htmlFile "wwwroot/pages/index.html" ]
 
 // ---------------------------------
 // Error handler
@@ -81,8 +81,8 @@ let configureCors (builder : CorsPolicyBuilder) =
 let configureApp (app : IApplicationBuilder) =
     let env = app.ApplicationServices.GetService<IHostingEnvironment>()
     (match env.IsDevelopment() with
-    | true  -> app.UseDeveloperExceptionPage()
-    | false -> app.UseGiraffeErrorHandler errorHandler)
+    | _  -> app.UseDeveloperExceptionPage())
+    //| false -> app.UseGiraffeErrorHandler errorHandler)
         .UseHttpsRedirection()
         .UseCors(configureCors)
         .UseStaticFiles()
@@ -93,7 +93,7 @@ let configureServices (services : IServiceCollection) =
     services.AddGiraffe() |> ignore
 
 let configureLogging (builder : ILoggingBuilder) =
-    let filter (l : LogLevel) = l.Equals LogLevel.Error
+    let filter (l : LogLevel) = l.Equals LogLevel.Debug
     builder.AddFilter(filter).AddConsole().AddDebug() |> ignore
 
 type LambdaEntryPoint() =
@@ -110,11 +110,11 @@ type LambdaEntryPoint() =
 [<EntryPoint>]
 let main _ =
     let contentRoot = Directory.GetCurrentDirectory()
-    let webRoot     = Path.Combine(contentRoot, "WebRoot")
+    //let webRoot     = Path.Combine(contentRoot, "WebRoot")
     WebHostBuilder()
         .UseKestrel()
         .UseContentRoot(contentRoot)
-        .UseWebRoot(webRoot)
+        //.UseWebRoot(webRoot)
         .Configure(Action<IApplicationBuilder> configureApp)
         .ConfigureServices(configureServices)
         .ConfigureLogging(configureLogging)
