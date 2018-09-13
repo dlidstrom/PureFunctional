@@ -8,6 +8,7 @@ open Microsoft.AspNetCore.Hosting
 open Microsoft.Extensions.Logging
 open Microsoft.Extensions.DependencyInjection
 open Giraffe
+open System.Collections.Generic
 
 // ---------------------------------
 // Models
@@ -55,10 +56,18 @@ let indexHandler (name : string) =
     let view      = Views.index model
     htmlView view
 
+let dirHandler (dir : string) =
+    let files = Directory.GetFiles dir
+    let dirs = Directory.GetDirectories dir
+    let concat a =
+        a |> String.concat Environment.NewLine
+    text (concat dirs + concat files)
+
 let webApp =
     choose [
         route "/ping"   >=> text "pong"
-        route "/"       >=> htmlFile "wwwroot/pages/index.html" ]
+        route "/"       >=> htmlFile "wwwroot/pages/index.html"
+        route "/dir"    >=> (Directory.GetCurrentDirectory() |> dirHandler) ]
 
 // ---------------------------------
 // Error handler
@@ -86,11 +95,13 @@ let configureApp (app : IApplicationBuilder) =
         .UseHttpsRedirection()
         .UseCors(configureCors)
         .UseStaticFiles()
+        //.UseDirectoryBrowser()
         .UseGiraffe(webApp)
 
 let configureServices (services : IServiceCollection) =
     services.AddCors()    |> ignore
     services.AddGiraffe() |> ignore
+    //services.AddDirectoryBrowser() |> ignore
 
 let configureLogging (builder : ILoggingBuilder) =
     let filter (l : LogLevel) = l.Equals LogLevel.Debug

@@ -1,4 +1,5 @@
 dotnet restore
+rm -r -f bin/release
 dotnet lambda package \
     --configuration release \
     --framework netcoreapp2.1 \
